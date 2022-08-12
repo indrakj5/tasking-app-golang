@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+        integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.12.1/datatables.min.css" />
+    <link rel="stylesheet" type="text/css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css" />
+    <link rel="stylesheet" type="text/css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+    <style>
+        body {
+            background-image: url('https://innov8tiv.com/wp-content/uploads/2019/08/image001-4.jpg');
+            background-repeat: no-repeat;
+        }
+    </style>
+
+
+    <title>Golang Tasking App</title>
+</head>
+
+<body>
+    <div class="modal fade" id="modalTask" tabindex="-1" role="dialog" aria-labelledby="modalTaskModel"
+        aria-hidden="true">
+
+    </div>
+
+    <div class="container mt-5">
+        <h1 class="text-center">Welcome To Golang Tasking App</h1>
+
+        <button type="button" class="btn btn-primary add-task"><i class="far fa-plus-square"> Add New Task</i></button>
+        <br>
+
+        <br>
+        <table id="example" class="table table-striped table-bordered" style="width:100%">
+            <thead>
+                <th>#</th>
+                <th>Task</th>
+                <th>Asignee</th>
+                <th>Deadline</th>
+                <th>Status</th>
+                <th>Action</th>
+            </thead>
+            {{ .data }}
+        </table>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.12.1/datatables.min.js"></script>
+
+    <script>
+
+        $(document).ready(function () {
+            $('#example').DataTable();
+        });
+
+        var site_url = "http://localhost:8000/"
+
+        $(document).ready(function () {
+            $('.add-task').click(function () {
+                $.get(site_url + "task/get_form", function (html) {
+                    $('#modalTask').html(html).modal('show')
+                });
+            });
+
+            $(document).on('click', '.edit-task', function () {
+                var id = $(this).attr('data-id');
+                $.get(site_url + "task/get_form?id=" + id, function (html) {
+                    $('#modalTask').html(html).modal('show')
+                });
+            });
+
+            $(document).on('click', '.delete-task', function () {
+                var id = $(this).attr('data-id');
+                var confirmDelete = confirm("apakah anda yakin ingin menghapus data?");
+                if (confirmDelete == true) {
+                    $.post(site_url + "task/delete", { id: id }, function (response) {
+                        alert(response.message)
+                        $('tbody').html(response.data);
+                    }, 'JSON');
+                }
+            });
+
+            $(document).on('click', '.update-task', function () {
+                var id = $(this).attr('data-id');
+                var confirmUpdate = confirm("apakah task ini sudah selesai?");
+                if (confirmUpdate == true) {
+                    $.post(site_url + "task/update_task", { id: id }, function (response) {
+                        alert(response.message)
+                        $('tbody').html(response.data);
+                    }, 'JSON');
+                }
+            });
+
+            $(document).on('submit', '#form-task', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    type: $(this).attr('method'),
+                    url: $(this).attr('action'),
+                    data: $(this).serialize(),
+                    dataType: "json",
+                    success: function (response) {
+                        $('tbody').html(response.data)
+                        alert(response.message)
+                        $('#modalTask').modal('hide')
+                    },
+                    error: function (response) {
+                        console.log(response)
+                    }
+                })
+            });
+        });
+    </script>
+</body>
+
+</html>

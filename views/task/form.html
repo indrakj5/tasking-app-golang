@@ -1,0 +1,36 @@
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exmpleModalLabel">{{ .title }}</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <form id="form-task" action="/task/store" method="POST">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="">Task</label>
+                    <input type="text" name="task" value="{{ .task.Task }}" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="">Asignee</label>
+                    <input type="text" name="asignee" value="{{ .task.Asignee }}" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="">Deadline</label>
+                    <input type="date" name="deadline" value="{{ .task.Deadline }}" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+                {{ if .task.Id }}
+                <input type="hidden" name="id" value="{{ .task.Id }}">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Ubah Data</button>
+                {{ else }}
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Simpan Data</button>
+                {{ end }}
+            </div>
+        </form>
+    </div>
+</div>
